@@ -41,8 +41,8 @@
     "examples"
   ],
   "scripts": {
-    "dev": "tsx src/cli/index.ts",
-    "build": "tsc -p tsconfig.build.json",
+    "dev": "node init && tsx src/cli/index.ts",
+    "build": "node init && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "lint": "eslint src tests scripts",

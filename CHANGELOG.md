@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+Documented the public GitHub source, source/tarball installation and verified CI coverage for commit `86cce82`. No npm package or versioned release was published.
+
+Fixed fresh-runner packed/terminal installation by deriving an offline installer lock from the committed dependency lock and local archive integrity. Made pending-approval deadline regression timing independent of runner speed. Isolated packed smoke child processes from inherited runner credentials while retaining synthetic fixture credentials. Linux Node 22/24 and macOS Node 24 passed full checks; Windows Node 24 passed type checking and packed installation.
+
 Added approved local Git status, bounded existing-file diff, limited history and local branch inspection, including explicit missing-Git/nonrepo/unborn states. Execution uses fixed arguments, root/metadata/config policy, disabled filters and bounded cancellation/output handling. Added ordinary/streaming adapter continuation tests and temporary-repository CLI tests.
 
 Added approved unique replacement and strict single-file patch previews, complete bounded diffs, byte hashes, per-registry expiring proposals and a disabled-by-default write permission. Application needs a second exact approval and checks stale identity/content. Per the explicit user choice, the Node backend fails closed before any write when atomic conflict-safe replacement is unavailable. Added local capability reporting and provider/CLI approval regressions.
@@ -24,7 +28,7 @@ Added combined client tools and structured final output across all optional prov
 
 Added optional local `ToolDefinition.resultSchema` validation across all optional providers in ordinary and streaming tool sessions. Successful results validate as raw JSON and redacted data before continuation; executor validation failures stop later handlers, and session validation failures block follow-up without retrying consumed approval. Result contracts are snapshotted into approval reviews and omitted from native declarations. Built-in tools now provide result schemas; `tools run --result-schemas` loads safe project-relative overrides separately from final-answer `--schema`. Added execution, CLI and three-provider contract tests. No dependency, permission or remote was added.
 
-Added approved provider-neutral `project_search` and `project_read` with safe bounded listing/search/ranges, ignore and credential exclusions, strict UTF-8, link/special-file protections and strict argument/result validation. Added a composed `task` runtime using existing prompt/context/session code, optional model/context, exact approval, cumulative usage, total limits and safe failure output. Fixed ordinary invalid UTF-8 acceptance and sensitive structured property-name leaks; unvalidated structured commentary/length/refusal text is withheld. Added filesystem/runtime/cross-provider tests and an isolated packed-install smoke command used by prepared CI. Existing `run` behavior and all 13 skills are preserved.
+Added approved provider-neutral `project_search` and `project_read` with safe bounded listing/search/ranges, ignore and credential exclusions, strict UTF-8, link/special-file protections and strict argument/result validation. Added a composed `task` runtime using existing prompt/context/session code, optional model/context, exact approval, cumulative usage, total limits and safe failure output. Fixed ordinary invalid UTF-8 acceptance and sensitive structured property-name leaks; unvalidated structured commentary/length/refusal text is withheld. Added filesystem/runtime/cross-provider tests and an isolated packed-install smoke command used by CI. Existing `run` behavior and all 13 skills are preserved.
 
 ### Security and release preparation
 
@@ -32,6 +36,6 @@ Hardened JSON, skill, graph and ignore-policy reads against outside-inode hard l
 
 Rejected terminal controls in configured and overridden model IDs. Sanitized explicit provider credentials in runtime, orchestration, status/config and connection diagnostics, including custom short values; withheld credential-bearing tool property names and typed JSON primitives without coercing schema types.
 
-Added cross-provider multi-turn checkpoint/structured runtime regressions and a repeatable installed pseudo-terminal suite covering approval, denial, cancellation and stale edit conflicts. Expanded offline help examples, documented release/security boundaries, and prepared Linux/macOS checks with a limited Windows installation job. This remains an unpublished private development package; no release or remote operation was performed.
+Added cross-provider multi-turn checkpoint/structured runtime regressions and a repeatable installed pseudo-terminal suite covering approval, denial, cancellation and stale edit conflicts. Expanded offline help examples, documented release/security boundaries, and prepared Linux/macOS checks with a limited Windows installation job. Those hardening changes did not publish a package or create a release; the source repository was subsequently made public with explicit owner approval.
 
 Prevented FIFO-open hangs in JSON, skill and graph readers with nonblocking descriptor opens before regular-file checks. Added a real POSIX named-pipe regression and model-control parity coverage against the generated config schema.

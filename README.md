@@ -1,6 +1,6 @@
 # AgentForge
 
-A provider-neutral, local-first developer toolkit with a TypeScript CLI, bounded AI workflows and 13 portable skills. This checkout is an **unpublished development version**. Local diagnostics and skill commands need no API credentials. Optional inference requires an explicitly configured provider and network approval.
+A provider-neutral, local-first developer toolkit with a TypeScript CLI, bounded AI workflows and 13 portable skills. The [public source repository](https://github.com/CharlieJamesGwapo/AgentForge) is a **development version**, with no npm publication or versioned release. Local diagnostics and skill commands need no API credentials. Optional inference requires an explicitly configured provider and network approval.
 
 ## What works
 
@@ -16,9 +16,11 @@ File application **fails closed** on the current Node backend: stale files repor
 
 ## Requirements and installation
 
-Requires Node.js **22.13+ in the 22.x line, or 24+**, and npm. The actual local checks run on macOS with Node 24. Prepared CI covers Linux Node 22/24, macOS Node 24 and a narrower Windows installation smoke check; hosted CI has not been run from this checkout. POSIX terminal tests additionally need Python 3 and Git.
+Requires Node.js **22.13+ in the 22.x line, or 24+**, npm and Git for cloning. Git inspection also needs Git; POSIX terminal tests additionally need Python 3. Linux Node 22/24 and macOS Node 24 passed full CI; Windows Node 24 passed type checking and packed installation. See [verified CI coverage](#verified-ci-coverage) for the exact commit and results.
 
 ```sh
+git clone https://github.com/CharlieJamesGwapo/AgentForge.git
+cd AgentForge
 npm ci
 npm run build
 node dist/cli/index.js --help
@@ -28,16 +30,16 @@ node dist/cli/index.js --version
 Use `npm run dev -- <command>` during development. In examples below, `agentforge` means an installed CLI; substitute `node dist/cli/index.js` from this checkout. To test a local installation:
 
 ```sh
-mkdir -p work/package
+node -e "require('node:fs').mkdirSync('work/package', {recursive: true})"
 npm pack --pack-destination work/package
 # Install the exact tarball printed above into an isolated prefix:
-npm install --prefix work/install --ignore-scripts --omit=dev work/package/agentforge-local-toolkit-0.1.0-dev.0.tgz
+npm install --prefix work/install --ignore-scripts --omit=dev ./work/package/agentforge-local-toolkit-0.1.0-dev.0.tgz
 node work/install/node_modules/agentforge-local-toolkit/dist/cli/index.js --help
 ```
 
 Installing the local tarball may contact the npm registry for dependencies; it does not contact an AI provider. The automated smoke suites use a lock-derived offline installer instead of assuming registry metadata is cached.
 
-There is no public package installation command or published version. Package metadata is private. The archive includes compiled JavaScript/declarations, portable skills, schemas, source, examples and documentation; local state, tests, historical plans, dependencies and reports are excluded. This is a CLI package with no supported library exports.
+There is no npm registry installation command or published version for this project. The public repository has `private: true` in package metadata to prevent npm publication; it does not restrict source access. See the [installation guide](docs/getting-started/installation.md) for source and tarball usage. The archive includes compiled JavaScript/declarations, portable skills, schemas, source, examples and documentation; local state, tests, historical plans, dependencies and reports are excluded. This is a CLI package with no supported library exports.
 
 ## Start offline
 
@@ -177,10 +179,22 @@ npm run test:terminal
 
 `check` runs formatting, lint, strict types, unit/integration tests, production build, skill/schema validation and local documentation-link validation. Packed tests install into temporary directories; terminal tests exercise real approval, denial and Ctrl+C against loopback providers. No live credentials are needed. See [testing](docs/development/testing.md), [contributing](CONTRIBUTING.md) and [local release checklist](docs/development/release-process.md).
 
-The [roadmap](ROADMAP.md) records implemented and planned work. The [Unreleased changelog](CHANGELOG.md) records this development checkout. Public release still needs verified copyright attribution, ownership, support/security routes and explicit approval. No repository, remote, release or package publication is configured.
+### Verified CI coverage
+
+Verified on **2026-10-19** for commit [`86cce82`](https://github.com/CharlieJamesGwapo/AgentForge/commit/86cce82c2c45a4a09a8a5c767f571326d1df2f9c): all seven checks across four push workflows passed.
+
+| Platform              | Passing coverage                                           |
+| --------------------- | ---------------------------------------------------------- |
+| Linux, Node 22 and 24 | Full `check`, packed installation and POSIX terminal tests |
+| macOS, Node 24        | Full `check`, packed installation and POSIX terminal tests |
+| Windows, Node 24      | Type checking and packed installation only                 |
+
+See the [successful CI run](https://github.com/CharlieJamesGwapo/AgentForge/actions/runs/39191455765), [documentation validation](https://github.com/CharlieJamesGwapo/AgentForge/actions/runs/39191455882), [skill validation](https://github.com/CharlieJamesGwapo/AgentForge/actions/runs/39191455796) and [dependency advisory check](https://github.com/CharlieJamesGwapo/AgentForge/actions/runs/39191455845). This records that commit's results; check [current Actions runs](https://github.com/CharlieJamesGwapo/AgentForge/actions) for later changes. Loopback fixtures do not establish live provider compatibility or complete Windows support.
+
+The [roadmap](ROADMAP.md) records implemented and planned work. The [Unreleased changelog](CHANGELOG.md) records development changes. Public source is available on GitHub; no versioned release, npm package or deployment is provided. The manual artifact workflow creates temporary development archives only.
 
 ## Support and license
 
-Use [SUPPORT.md](SUPPORT.md) for local diagnostics and reporting guidance; no public support address or service commitment exists. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [GOVERNANCE.md](GOVERNANCE.md) state the current community limitations honestly.
+Use [GitHub Issues](https://github.com/CharlieJamesGwapo/AgentForge/issues) for non-sensitive bugs, feature requests and questions. Read [SUPPORT.md](SUPPORT.md) before sharing diagnostics and [SECURITY.md](SECURITY.md) before reporting a vulnerability. No support email or response-time commitment is established. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [GOVERNANCE.md](GOVERNANCE.md) state the current community limitations honestly.
 
-Licensed under the [MIT License](LICENSE), with collective attribution to AgentForge contributors. No individual maintainer identities, repository URLs, badges, release links or funding destinations are configured. CODEOWNERS and funding configuration remain absent until verified information exists.
+Licensed under the [MIT License](LICENSE), with collective attribution to AgentForge contributors. No maintainer roster, confidential reporting contact or funding destination is established. CODEOWNERS and funding configuration are absent; adding them requires verified ownership duties or a real funding destination.

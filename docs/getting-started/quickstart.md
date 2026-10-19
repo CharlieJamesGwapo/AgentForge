@@ -1,6 +1,6 @@
 # Quickstart
 
-Run these commands from the source checkout after building:
+Follow [installation](installation.md) to clone the public repository, install dependencies and build. Then run these commands from the source checkout:
 
 ```sh
 node dist/cli/index.js init
