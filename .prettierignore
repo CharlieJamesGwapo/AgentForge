@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+work
+outputs
+.agentforge
+package-lock.json

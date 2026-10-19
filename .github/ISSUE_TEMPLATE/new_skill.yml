@@ -1,0 +1,13 @@
+name: Skill proposal
+description: A portable provider-neutral procedure
+body:
+  - type: markdown
+    attributes:
+      value: 'For security-sensitive reports, first read SECURITY.md and obtain a verified private reporting route.'
+  - type: textarea
+    id: details
+    attributes:
+      label: Skill design
+      description: Include unique id, purpose, inputs/outputs, steps, safety boundaries, prerequisites, example and acceptance criteria.
+    validations:
+      required: true

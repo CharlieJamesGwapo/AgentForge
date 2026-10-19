@@ -1,0 +1,20 @@
+{
+  "project_summary": {
+    "type": "object",
+    "properties": {
+      "project": { "type": "string" },
+      "package": {
+        "type": "object",
+        "properties": {
+          "name": { "type": ["string", "null"] },
+          "version": { "type": ["string", "null"] },
+          "scripts": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["name", "version", "scripts"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["project", "package"],
+    "additionalProperties": false
+  }
+}

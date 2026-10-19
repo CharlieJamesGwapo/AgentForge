@@ -1,0 +1,13 @@
+name: Feature request
+description: An improvement tied to a concrete use case
+body:
+  - type: markdown
+    attributes:
+      value: 'For security-sensitive reports, first read SECURITY.md and obtain a verified private reporting route.'
+  - type: textarea
+    id: details
+    attributes:
+      label: Problem and desired behavior
+      description: Describe who needs this, the current limitation, acceptance criteria and a small example.
+    validations:
+      required: true

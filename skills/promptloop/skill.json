@@ -1,0 +1,60 @@
+{
+  "id": "promptloop",
+  "name": "PromptLoop",
+  "summary": "Run bounded implementation and verification cycles with explicit stop conditions.",
+  "purpose": "Define success before work begins, limit iterations and execution time, detect repeated failures, and stop with evidence when complete, blocked, unsafe, or out of attempts.",
+  "inputs": [
+    {
+      "name": "objective",
+      "required": true,
+      "description": "The task and its observable success criteria."
+    },
+    {
+      "name": "limits",
+      "required": true,
+      "description": "Iteration limit, timeout, and stop conditions."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "cycle_report",
+      "description": "A bounded execution plan or final report containing evidence, outcomes, and remaining issues."
+    }
+  ],
+  "procedure": [
+    "Translate the objective into verifiable success criteria before taking action.",
+    "Set a finite maximum iteration count, a timeout, and explicit conditions for stopping early.",
+    "Choose the smallest useful action for the next iteration and record its expected evidence.",
+    "Run only actions supported by the current host capabilities and user authorization.",
+    "After each attempt, record results and check for repeated failures, lack of progress, or a newly unsafe condition.",
+    "Stop when the criteria pass, a blocker requires user input, the action becomes unsafe, or a configured limit is reached.",
+    "Report passed, failed, skipped, and unavailable checks with evidence and remaining issues."
+  ],
+  "safety": [
+    "Never run indefinitely or exceed the configured attempt and time limits.",
+    "Require the host’s approval flow for risky or externally consequential operations.",
+    "Do not claim to control an external AI system unless a real adapter was used.",
+    "Do not claim success without the evidence specified by the acceptance criteria."
+  ],
+  "capabilities": {
+    "requiresModel": true,
+    "requiresShell": true,
+    "requiresNetwork": false
+  },
+  "examples": [
+    {
+      "input": "Fix the parser regression with at most three iterations and a five-minute limit.",
+      "output": "Define the regression test as success, run a targeted reproduction first, cap work at three attempts or five minutes, stop on repeated failure, and report the test result plus any remaining issue."
+    }
+  ],
+  "acceptance": [
+    "Success criteria, a finite iteration limit, timeout, and stop conditions are defined before execution.",
+    "Work stops when complete, blocked, unsafe, or out of iterations.",
+    "The final report distinguishes evidence-backed outcomes from unavailable checks."
+  ],
+  "version": "1.0.0",
+  "compatibility": {
+    "formatVersion": 1,
+    "providers": ["any"]
+  }
+}

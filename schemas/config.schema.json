@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "enabledSkills": {
+      "maxItems": 200,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      }
+    },
+    "skillDirectories": {
+      "maxItems": 20,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "pattern": "^(?!\\/)(?!.*[:\\\\\\x00-\\x1f])(?!.*\\/\\/)(?!.*\\/$)(?!.*(?:^|\\/)\\.{1,2}(?:\\/|$))[\\s\\S]+$"
+      }
+    },
+    "checkpointDirectory": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "allOf": [
+        {
+          "pattern": "^(?!\\/)(?!.*[:\\\\\\x00-\\x1f])(?!.*\\/\\/)(?!.*\\/$)(?!.*(?:^|\\/)\\.{1,2}(?:\\/|$))[\\s\\S]+$"
+        },
+        {
+          "pattern": "^\\.agentforge\\/"
+        }
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "checks": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "command": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "args": {
+                "maxItems": 100,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 10000
+                }
+              }
+            },
+            "required": ["name", "command", "args"],
+            "additionalProperties": false
+          }
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        }
+      },
+      "required": ["checks", "timeoutMs", "maxOutputBytes"],
+      "additionalProperties": false
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "maxIterations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "maxDurationMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600000
+        }
+      },
+      "required": ["maxIterations", "maxDurationMs"],
+      "additionalProperties": false
+    },
+    "adapters": {
+      "minItems": 1,
+      "maxItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["local"]
+      }
+    },
+    "providers": {
+      "default": [],
+      "maxItems": 3,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["openai", "anthropic", "ollama"]
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$"
+          },
+          "baseUrl": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "apiKeyEnv": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Z][A-Z0-9_]*(?:_KEY|_TOKEN)$"
+          },
+          "maxOutputTokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32768
+          }
+        },
+        "required": ["id", "model"],
+        "additionalProperties": false
+      }
+    },
+    "orchestration": {
+      "default": {
+        "enabled": false,
+        "maxConcurrency": 2,
+        "maxDepth": 1,
+        "maxSubtasks": 8,
+        "maxContextBytes": 16384,
+        "maxOutputBytes": 32768,
+        "timeoutMs": 60000,
+        "maxDurationMs": 300000,
+        "planner": null,
+        "executor": null
+      },
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "maxConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "maxDepth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxSubtasks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "maxContextBytes": {
+          "type": "integer",
+          "minimum": 256,
+          "maximum": 32768
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "minimum": 256,
+          "maximum": 65536
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "maxDurationMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600000
+        },
+        "planner": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$"
+                }
+              },
+              "required": ["provider"],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "executor": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$"
+                }
+              },
+              "required": ["provider"],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "enabled",
+        "maxConcurrency",
+        "maxDepth",
+        "maxSubtasks",
+        "maxContextBytes",
+        "maxOutputBytes",
+        "timeoutMs",
+        "maxDurationMs",
+        "planner",
+        "executor"
+      ],
+      "additionalProperties": false
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "allowProcess": {
+          "type": "boolean"
+        },
+        "allowNetwork": {
+          "default": false,
+          "type": "boolean"
+        },
+        "allowTools": {
+          "default": false,
+          "type": "boolean"
+        },
+        "allowWrite": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": ["allowProcess"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "project",
+    "enabledSkills",
+    "skillDirectories",
+    "checkpointDirectory",
+    "verification",
+    "workflow",
+    "adapters",
+    "permissions"
+  ],
+  "additionalProperties": false
+}

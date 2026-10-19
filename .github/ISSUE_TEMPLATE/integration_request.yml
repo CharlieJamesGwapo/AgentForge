@@ -1,0 +1,13 @@
+name: Integration request
+description: A real provider/host/runtime capability
+body:
+  - type: markdown
+    attributes:
+      value: 'For security-sensitive reports, first read SECURITY.md and obtain a verified private reporting route.'
+  - type: textarea
+    id: details
+    attributes:
+      label: Integration evidence
+      description: Name the actual API/tool, official documentation, versions, authentication, requested capabilities and test strategy. Do not include credentials.
+    validations:
+      required: true

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "project": "AgentForge",
+  "enabledSkills": [
+    "promptforge",
+    "tokensaver",
+    "contextpilot",
+    "promptloop",
+    "graphify",
+    "uiux-architect",
+    "smartdiff",
+    "verifyloop",
+    "debugsherlock",
+    "agentflow",
+    "secureship",
+    "skillforge",
+    "shipnotes"
+  ],
+  "skillDirectories": [".agentforge/skills"],
+  "checkpointDirectory": ".agentforge/checkpoints",
+  "verification": {
+    "checks": [
+      {
+        "name": "typecheck",
+        "command": "npm",
+        "args": ["run", "typecheck"]
+      },
+      {
+        "name": "tests",
+        "command": "npm",
+        "args": ["test"]
+      },
+      {
+        "name": "build",
+        "command": "npm",
+        "args": ["run", "build"]
+      }
+    ],
+    "timeoutMs": 30000,
+    "maxOutputBytes": 65536
+  },
+  "workflow": {
+    "maxIterations": 3,
+    "maxDurationMs": 120000
+  },
+  "adapters": ["local"],
+  "permissions": {
+    "allowProcess": false
+  }
+}

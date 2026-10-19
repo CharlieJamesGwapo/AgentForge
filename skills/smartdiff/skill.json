@@ -1,0 +1,60 @@
+{
+  "id": "smartdiff",
+  "name": "SmartDiff",
+  "summary": "Keep changes narrow, consistent with the codebase, and easy for a reviewer to assess.",
+  "purpose": "Inspect existing code, preserve user changes and established architecture, avoid unrelated refactors, and review the final diff for scope and accidental content.",
+  "inputs": [
+    {
+      "name": "change_request",
+      "required": true,
+      "description": "The requested code or documentation change."
+    },
+    {
+      "name": "repository_state",
+      "required": false,
+      "description": "Current working tree status and relevant files."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "reviewable_diff",
+      "description": "A minimal change set with the purpose of each meaningful file change and a concise diff review."
+    }
+  ],
+  "procedure": [
+    "Inspect repository status and relevant files before editing; identify existing user changes.",
+    "Trace the requested behavior to the smallest set of responsible files.",
+    "Follow established names, architecture, and error-handling conventions.",
+    "Make only edits required by the acceptance criteria and preserve unrelated user changes.",
+    "Inspect the complete diff for accidental changes, secrets, debug statements, and unexpected generated files.",
+    "For each meaningful file change, explain why it is needed and how it supports the request.",
+    "Call out substantial scope expansion and obtain direction before expanding the task."
+  ],
+  "safety": [
+    "Do not overwrite or discard existing user changes.",
+    "Do not include secrets, credentials, or debug output in the diff.",
+    "Do not perform broad cleanup unrelated to the request.",
+    "Do not commit or publish unless the user has authorized that external project action."
+  ],
+  "capabilities": {
+    "requiresModel": true,
+    "requiresShell": true,
+    "requiresNetwork": false
+  },
+  "examples": [
+    {
+      "input": "Add a schema check to skill discovery.",
+      "output": "Inspect the skill engine and tests, change only the schema and discovery paths required, preserve other working-tree changes, then review the diff for unrelated edits and explain each changed file."
+    }
+  ],
+  "acceptance": [
+    "The diff is limited to files necessary for the requested behavior.",
+    "Existing user changes and project conventions are preserved.",
+    "The final diff has been checked for secrets, debug statements, and unrelated edits."
+  ],
+  "version": "1.0.0",
+  "compatibility": {
+    "formatVersion": 1,
+    "providers": ["any"]
+  }
+}

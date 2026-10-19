@@ -1,0 +1,13 @@
+name: Bug report
+description: A reproducible non-sensitive failure
+body:
+  - type: markdown
+    attributes:
+      value: 'For security-sensitive reports, first read SECURITY.md and obtain a verified private reporting route.'
+  - type: textarea
+    id: details
+    attributes:
+      label: Command and reproduction
+      description: Include the exact command, sanitized config, expected and actual behavior, OS/Node versions, exit code and checks executed. Never include credentials or undisclosed security details.
+    validations:
+      required: true

@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "answer": { "type": "string" },
+    "confidence": { "type": "string", "enum": ["low", "medium", "high"] }
+  },
+  "required": ["answer", "confidence"],
+  "additionalProperties": false
+}

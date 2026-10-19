@@ -1,0 +1,76 @@
+{
+  "name": "agentforge-local-toolkit",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "description": "Provider-neutral local AI development workflows and portable skills",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "agentforge": "dist/cli/index.js"
+  },
+  "engines": {
+    "node": "^22.13.0 || >=24.0.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "skills",
+    "schemas",
+    "docs/architecture",
+    "docs/benchmarks",
+    "docs/cli",
+    "docs/features",
+    "docs/getting-started",
+    "docs/integrations",
+    "docs/skills",
+    "docs/development/dependency-management.md",
+    "docs/development/release-process.md",
+    "docs/development/testing.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "GOVERNANCE.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "ROADMAP.md",
+    "CHANGELOG.md",
+    "SKILLS.md",
+    "INTEGRATIONS.md",
+    "LICENSE",
+    "examples"
+  ],
+  "scripts": {
+    "dev": "tsx src/cli/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "lint": "eslint src tests scripts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate:skills": "tsx scripts/validate-skills.ts",
+    "validate:docs": "tsx scripts/validate-docs.ts",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run validate:skills && npm run validate:schemas && npm run validate:docs",
+    "prepack": "npm run build && npm run validate:skills",
+    "benchmark": "tsx scripts/benchmark.ts",
+    "schemas": "tsx scripts/generate-schemas.ts",
+    "validate:schemas": "tsx scripts/validate-schemas.ts",
+    "test:packed": "npm run build && tsx tests/packed-install.smoke.ts",
+    "test:terminal": "npm run build && tsx tests/terminal-install.smoke.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "commander": "^15.0.0",
+    "ignore": "^7.0.12",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "eslint": "^10.13.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2"
+  }
+}
