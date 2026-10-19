@@ -7,6 +7,11 @@ import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import type { Config } from '../src/core/config.js';
 import { sendToolReply, type Protocol } from './helpers/tool-protocol.js';
+import {
+  writePackedInstallFiles,
+  type NpmLockfile,
+  type PackedPackageManifest,
+} from './helpers/packed-install.js';
 const root = process.cwd();
 if (process.platform === 'win32')
   throw new Error('Terminal smoke requires a POSIX PTY and Python 3.');
@@ -22,7 +27,12 @@ const key = 'terminal-fixture-credential';
 let commands = 0,
   requests = 0;
 const evidence: { name: string; code: number; batches: number }[] = [];
-async function command(executable: string, args: string[], expected = 0) {
+async function command(
+  executable: string,
+  args: string[],
+  expected = 0,
+  cwd?: string,
+) {
   commands++;
   const result = await new Promise<{
     code: number | null;
@@ -32,6 +42,7 @@ async function command(executable: string, args: string[], expected = 0) {
     const child = spawn(executable, args, {
       env: { ...process.env, TERMINAL_FIXTURE_KEY: key },
       stdio: ['ignore', 'pipe', 'pipe'],
+      ...(cwd === undefined ? {} : { cwd }),
     });
     let stdout = '',
       stderr = '';
@@ -144,18 +155,30 @@ try {
   )[0];
   const prefix = path.join(scratch, 'install');
   await mkdir(prefix);
-  await command(process.execPath, [
-    npmPath,
-    'install',
-    '--prefix',
+  await writePackedInstallFiles({
     prefix,
-    '--offline',
-    '--ignore-scripts',
-    '--omit=dev',
-    '--no-audit',
-    '--no-fund',
-    path.join(archive, packed.filename),
-  ]);
+    tarballPath: path.join(archive, packed.filename),
+    packageManifest: JSON.parse(
+      await readFile(path.join(root, 'package.json'), 'utf8'),
+    ) as PackedPackageManifest,
+    sourceLockfile: JSON.parse(
+      await readFile(path.join(root, 'package-lock.json'), 'utf8'),
+    ) as NpmLockfile,
+  });
+  await command(
+    process.execPath,
+    [
+      npmPath,
+      'ci',
+      '--offline',
+      '--ignore-scripts',
+      '--omit=dev',
+      '--no-audit',
+      '--no-fund',
+    ],
+    0,
+    prefix,
+  );
   const packageRoot = path.join(
     prefix,
     'node_modules',

@@ -31,9 +31,11 @@ Use `npm run dev -- <command>` during development. In examples below, `agentforg
 mkdir -p work/package
 npm pack --pack-destination work/package
 # Install the exact tarball printed above into an isolated prefix:
-npm install --prefix work/install --offline --ignore-scripts --omit=dev work/package/agentforge-local-toolkit-0.1.0-dev.0.tgz
+npm install --prefix work/install --ignore-scripts --omit=dev work/package/agentforge-local-toolkit-0.1.0-dev.0.tgz
 node work/install/node_modules/agentforge-local-toolkit/dist/cli/index.js --help
 ```
+
+Installing the local tarball may contact the npm registry for dependencies; it does not contact an AI provider. The automated smoke suites use a lock-derived offline installer instead of assuming registry metadata is cached.
 
 There is no public package installation command or published version. Package metadata is private. The archive includes compiled JavaScript/declarations, portable skills, schemas, source, examples and documentation; local state, tests, historical plans, dependencies and reports are excluded. This is a CLI package with no supported library exports.
 

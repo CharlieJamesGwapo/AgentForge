@@ -12,12 +12,23 @@ import {
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { sendToolReply, type Protocol } from './helpers/tool-protocol.js';
+import {
+  writePackedInstallFiles,
+  type NpmLockfile,
+  type PackedPackageManifest,
+} from './helpers/packed-install.js';
+const root = process.cwd();
 const scratch = await mkdtemp(path.join(tmpdir(), 'agentforge-packed-'));
 let commands = 0,
   requests = 0;
 const key = 'packed-fixture-credential';
 const env = { ...process.env, PACKED_FIXTURE_KEY: key };
-async function execute(command: string, args: string[], expected = 0) {
+async function execute(
+  command: string,
+  args: string[],
+  expected = 0,
+  cwd?: string,
+) {
   commands++;
   const result = await new Promise<{
     code: number | null;
@@ -27,6 +38,7 @@ async function execute(command: string, args: string[], expected = 0) {
     const child = spawn(command, args, {
       env,
       stdio: ['ignore', 'pipe', 'pipe'],
+      ...(cwd === undefined ? {} : { cwd }),
     });
     let stdout = '',
       stderr = '';
@@ -203,18 +215,30 @@ try {
     );
   const prefix = path.join(scratch, 'install');
   await mkdir(prefix);
-  await execute(process.execPath, [
-    npmPath,
-    'install',
-    '--prefix',
+  await writePackedInstallFiles({
     prefix,
-    '--offline',
-    '--ignore-scripts',
-    '--omit=dev',
-    '--no-audit',
-    '--no-fund',
-    path.join(archiveDir, metadata.filename),
-  ]);
+    tarballPath: path.join(archiveDir, metadata.filename),
+    packageManifest: JSON.parse(
+      await readFile(path.join(root, 'package.json'), 'utf8'),
+    ) as PackedPackageManifest,
+    sourceLockfile: JSON.parse(
+      await readFile(path.join(root, 'package-lock.json'), 'utf8'),
+    ) as NpmLockfile,
+  });
+  await execute(
+    process.execPath,
+    [
+      npmPath,
+      'ci',
+      '--offline',
+      '--ignore-scripts',
+      '--omit=dev',
+      '--no-audit',
+      '--no-fund',
+    ],
+    0,
+    prefix,
+  );
   const entry = path.join(
     prefix,
     'node_modules/agentforge-local-toolkit/dist/cli/index.js',

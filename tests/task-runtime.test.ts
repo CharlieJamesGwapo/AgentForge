@@ -268,51 +268,87 @@ test('task runtime executes a tool batch only after explicit approval and report
   );
 });
 
-test('task runtime deadline interrupts a pending approval and a late approval cannot execute', async (t) => {
-  const root = await makeProject(t);
-  await setConfig(root, 'permissions.allowTools', true);
-  let requests = 0;
-  let approveLater: ((approved: boolean) => void) | undefined;
-  await withOllamaServer(
-    (_body, response) => {
-      requests++;
-      response.setHeader('content-type', 'application/json');
-      response.end(
-        JSON.stringify(
-          ollamaReply('Before the check.', {
-            toolCalls: [
-              { function: { name: 'project_summary', arguments: {} } },
-            ],
-          }),
-        ),
-      );
-    },
-    async (baseUrl) => {
-      await setConfig(root, 'providers', [
-        { id: 'ollama', model: 'fixture', baseUrl },
-      ]);
-      const result = await runTaskRuntime({
-        root,
-        task: 'Inspect package metadata',
-        provider: 'ollama',
-        approveNetwork: true,
-        executeTools: true,
-        maxDurationMs: 30,
-        approveToolBatch: () =>
-          new Promise<boolean>((resolve) => {
-            approveLater = resolve;
-          }),
-      });
-      assert.equal(result.status, 'failed');
-      assert.equal(result.error?.code, 'timeout');
-      assert.equal(result.approvedToolBatches, 0);
-      assert.equal(result.output, 'Before the check.');
-      approveLater?.(true);
-      await new Promise((resolve) => setTimeout(resolve, 20));
-      assert.equal(requests, 1);
-    },
-  );
-});
+test(
+  'task runtime deadline interrupts a pending approval and a late approval cannot execute',
+  { timeout: 10000 },
+  async (t) => {
+    const root = await makeProject(t);
+    await setConfig(root, 'permissions.allowTools', true);
+    const nativeSetTimeout = globalThis.setTimeout;
+    const taskDeadlineMs = 123456;
+    let expireTask: (() => void) | undefined;
+    t.mock.method(
+      globalThis,
+      'setTimeout',
+      (callback: () => void, milliseconds?: number, ...args: unknown[]) => {
+        if (milliseconds === taskDeadlineMs) {
+          expireTask = callback;
+          return nativeSetTimeout(() => {}, milliseconds);
+        }
+        return Reflect.apply(nativeSetTimeout, globalThis, [
+          callback,
+          milliseconds,
+          ...args,
+        ]);
+      },
+    );
+    let requests = 0;
+    let approveLater: ((approved: boolean) => void) | undefined;
+    let markApprovalEntered!: () => void;
+    const approvalEntered = new Promise<void>((resolve) => {
+      markApprovalEntered = resolve;
+    });
+    await withOllamaServer(
+      async (_body, response) => {
+        requests++;
+        // Deliberately slower than the old 30 ms total deadline. Reach approval
+        // explicitly before firing the task timer, regardless of runner load.
+        await new Promise((resolve) => nativeSetTimeout(resolve, 80));
+        response.setHeader('content-type', 'application/json');
+        response.end(
+          JSON.stringify(
+            ollamaReply('Before the check.', {
+              toolCalls: [
+                { function: { name: 'project_summary', arguments: {} } },
+              ],
+            }),
+          ),
+        );
+      },
+      async (baseUrl) => {
+        await setConfig(root, 'providers', [
+          { id: 'ollama', model: 'fixture', baseUrl },
+        ]);
+        const pending = runTaskRuntime({
+          root,
+          task: 'Inspect package metadata',
+          provider: 'ollama',
+          approveNetwork: true,
+          executeTools: true,
+          maxDurationMs: taskDeadlineMs,
+          signal: t.signal,
+          approveToolBatch: () =>
+            new Promise<boolean>((resolve) => {
+              approveLater = resolve;
+              markApprovalEntered();
+            }),
+        });
+        await approvalEntered;
+        assert.ok(expireTask);
+        expireTask();
+        const result = await pending;
+        assert.equal(result.status, 'failed');
+        assert.equal(result.error?.code, 'timeout');
+        assert.equal(result.approvedToolBatches, 0);
+        assert.equal(result.approvedToolCalls, 0);
+        assert.equal(result.output, 'Before the check.');
+        approveLater?.(true);
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        assert.equal(requests, 1);
+      },
+    );
+  },
+);
 
 test('task runtime cancellation interrupts a pending approval and a late approval cannot execute', async (t) => {
   const root = await makeProject(t);
