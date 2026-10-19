@@ -122,6 +122,44 @@ test('packed installer lock refuses dependencies absent from the source lock', (
 });
 
 test(
+  'packed CLI smoke isolates inherited secret and database-password variables',
+  { timeout: 60_000 },
+  async (t) => {
+    const npmExecPath = process.env.npm_execpath ?? '';
+    if (npmExecPath.length === 0)
+      throw new Error('Run this regression through npm test.');
+    const result = await new Promise<{
+      code: number | null;
+      stdout: string;
+      stderr: string;
+    }>((resolve, reject) => {
+      const child = spawn(
+        process.execPath,
+        [npmExecPath, 'run', 'test:packed'],
+        {
+          cwd: process.cwd(),
+          env: { ...process.env, SECRET: 'string', PGPASSWORD: 'project' },
+          signal: t.signal,
+          stdio: 'pipe',
+        },
+      ) as ChildProcessWithoutNullStreams;
+      let stdout = '';
+      let stderr = '';
+      child.stdout.on('data', (chunk: Buffer) => {
+        stdout += chunk.toString('utf8');
+      });
+      child.stderr.on('data', (chunk: Buffer) => {
+        stderr += chunk.toString('utf8');
+      });
+      child.once('error', reject);
+      child.once('close', (code) => resolve({ code, stdout, stderr }));
+    });
+    assert.equal(result.code, 0, `${result.stdout}\n${result.stderr}`);
+    assert.match(result.stdout, /"liveProviderRequests": 0/);
+  },
+);
+
+test(
   'locked packed install works with a cold metadata cache and makes no registry requests',
   { timeout: 30_000 },
   async (t) => {

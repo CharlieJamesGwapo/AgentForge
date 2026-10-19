@@ -35,6 +35,20 @@ export interface PackedInstallFiles {
 }
 
 const INSTALLER_NAME = 'agentforge-packed-install';
+const CREDENTIAL_ENV_NAME = /(?:token|secret|password|api[_-]?key|credential)/i;
+
+/** Remove inherited credential-like variables before supplying fixture credentials. */
+export function packedSmokeEnvironment(
+  inherited: NodeJS.ProcessEnv,
+  fixtureKey: string,
+): NodeJS.ProcessEnv {
+  const safeInherited = Object.fromEntries(
+    Object.entries(inherited).filter(
+      ([name]) => !CREDENTIAL_ENV_NAME.test(name),
+    ),
+  );
+  return { ...safeInherited, PACKED_FIXTURE_KEY: fixtureKey };
+}
 
 function sameDependencies(
   left: Record<string, unknown>,

@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { sendToolReply, type Protocol } from './helpers/tool-protocol.js';
 import {
+  packedSmokeEnvironment,
   writePackedInstallFiles,
   type NpmLockfile,
   type PackedPackageManifest,
@@ -22,7 +23,7 @@ const scratch = await mkdtemp(path.join(tmpdir(), 'agentforge-packed-'));
 let commands = 0,
   requests = 0;
 const key = 'packed-fixture-credential';
-const env = { ...process.env, PACKED_FIXTURE_KEY: key };
+const env = packedSmokeEnvironment(process.env, key);
 async function execute(
   command: string,
   args: string[],
