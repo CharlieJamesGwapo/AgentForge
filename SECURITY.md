@@ -1,8 +1,8 @@
 # Security
 
-This is an unpublished development project. There are no released versions, supported-version guarantees or established security response team. No security contact, private reporting channel or response-time commitment has been verified.
+AgentForge has public development source at [CharlieJamesGwapo/AgentForge](https://github.com/CharlieJamesGwapo/AgentForge), but no published npm package or versioned release. There are no released versions, supported-version guarantees or established security response team. No security contact, private reporting channel or response-time commitment has been verified.
 
-If you discover a vulnerability, keep secrets and exploit details private, stop affected local execution, and prepare a sanitized reproduction. Ask the actual project owner for a verified private reporting route before sending details. Do not put credentials or an undisclosed exploit in public issue forms. Once a hosted repository exists, its owner must establish a private reporting route before release.
+If you discover a vulnerability, keep secrets and exploit details private, stop affected local execution, and prepare a sanitized reproduction. Ask the actual project owner for a verified private reporting route before sending details. Do not put credentials or an undisclosed exploit in public issue forms. The repository owner still needs to establish a verified private reporting route before a versioned release.
 
 ## Controls
 
@@ -49,6 +49,6 @@ JSON storage, skill metadata, graph source and `.gitignore` policy reads reject 
 
 Model IDs reject C0, DEL and C1 controls before normalization, including role overrides, so they cannot inject terminal controls into approval labels. Runtime/config/status diagnostics sanitize explicitly configured provider credentials even for short values or custom environment names. Credential-bearing property names and typed scalar JSON values are withheld rather than changing their schema types. Truncated private-key blocks are redacted through end-of-output. Redaction cannot recognize unknown private data; inspect reports before sharing.
 
-The repository uses private package metadata, least-privilege pinned-action workflows and deterministic provider fixtures. No workflow requires live provider secrets. The Windows job is installation/type coverage only; POSIX terminal tests and process-group guarantees do not establish full Windows support. Local hygiene scans are heuristic and do not replace review or a dedicated secret scanner before distribution.
+The public repository uses `private: true` package metadata to block npm publication, least-privilege pinned-action workflows and deterministic provider fixtures. No workflow requires live provider secrets. The [passing CI results](docs/development/testing.md#verified-hosted-ci) include Windows installation/type coverage only; POSIX terminal tests and process-group guarantees do not establish full Windows support. Local hygiene scans are heuristic and do not replace review or a dedicated secret scanner before distribution.
 
 Regular-file readers open nonblocking before descriptor type checks, preventing POSIX named pipes from stalling configuration/skill/graph operations. The checked-in config schema rejects model control characters too; semantic endpoint checks still require the runtime validator.
